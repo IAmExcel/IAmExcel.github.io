@@ -8,9 +8,16 @@ import { TerminalText } from './components/TerminalText';
 import { Section } from './components/Section';
 import { SkillBadge, ExperienceCard } from './components/ExperienceCard';
 
-const StatCard = ({ value, label }: { value: string; label: string }) => (
+const StatCard = ({ value, label, delay = 0 }: { value: string; label: string; delay?: number }) => (
   <div className="p-4 border border-primary/20 bg-primary/5 rounded-sm">
-    <div className="text-2xl md:text-3xl font-heading text-primary mb-1 terminal-glow">{value}</div>
+    <motion.div
+      // CRT-style flicker: mostly on, with brief irregular dips. Linear easing keeps the dips snappy.
+      animate={{ opacity: [1, 1, 1, 0.25, 1, 1, 0.7, 1, 1, 1, 0.4, 1] }}
+      transition={{ duration: 5, repeat: Infinity, ease: 'linear', delay, times: [0, 0.18, 0.22, 0.24, 0.27, 0.5, 0.52, 0.55, 0.7, 0.82, 0.84, 1] }}
+      className="text-2xl md:text-3xl font-heading text-primary mb-1 terminal-glow"
+    >
+      {value}
+    </motion.div>
     <div className="text-xs md:text-sm font-mono text-foreground/60">{label}</div>
   </div>
 );
@@ -215,10 +222,10 @@ export default function App() {
             </p>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <StatCard value="10+" label="Vulns found/cycle" />
-            <StatCard value="60%" label="Unauthorized drop" />
-            <StatCard value="50%" label="Faster IR time" />
-            <StatCard value="4" label="Active certs" />
+            <StatCard value="10+" label="Vulns found/cycle" delay={0} />
+            <StatCard value="60%" label="Unauthorized drop" delay={1.1} />
+            <StatCard value="50%" label="Faster IR time" delay={2.4} />
+            <StatCard value="4" label="Active certs" delay={3.7} />
           </div>
         </div>
       </Section>
