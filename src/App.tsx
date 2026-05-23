@@ -15,54 +15,72 @@ const StatCard = ({ value, label }: { value: string; label: string }) => (
   </div>
 );
 
-const ProjectCard = () => (
+type ProjectCardProps = {
+  title: string;
+  subtitle: string;
+  description: string;
+  bullets: string[];
+  tags: string[];
+  githubUrl?: string;
+  liveUrl?: string;
+};
+
+const ProjectCard = ({ title, subtitle, description, bullets, tags, githubUrl, liveUrl }: ProjectCardProps) => (
   <div className="relative group p-6 md:p-8 border border-primary/30 bg-primary/5 rounded-sm overflow-hidden">
     {/* Binary background effect placeholder */}
     <div className="absolute inset-0 opacity-5 pointer-events-none font-mono text-[10px] select-none overflow-hidden leading-tight">
       {Array(20).fill('01101001 01101110 01101111 01101011 01100001 ').map((s, i) => <div key={i}>{s.repeat(5)}</div>)}
     </div>
-    
+
     <div className="relative z-10 space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h3 className="text-xl md:text-2xl font-heading text-secondary mb-1">Unika — AI-Powered Phishing Detection</h3>
-          <p className="text-sm font-mono text-primary/60">2026 | Manhattan College Senior Capstone</p>
+          <h3 className="text-xl md:text-2xl font-heading text-secondary mb-1">{title}</h3>
+          <p className="text-sm font-mono text-primary/60">{subtitle}</p>
         </div>
         <div className="flex gap-3">
-          <span className="p-2 border border-primary/20 rounded-sm hover:border-primary transition-colors">
-            <Globe size={18} />
-          </span>
-          <span className="p-2 border border-primary/20 rounded-sm hover:border-primary transition-colors">
-            <ExternalLink size={18} />
-          </span>
+          {githubUrl && (
+            <a
+              href={githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="View source on GitHub"
+              className="p-2 border border-primary/20 rounded-sm hover:border-primary transition-colors block text-primary"
+            >
+              <Globe size={18} />
+            </a>
+          )}
+          {liveUrl && (
+            <a
+              href={liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Open live demo"
+              className="p-2 border border-primary/20 rounded-sm hover:border-primary transition-colors block text-primary"
+            >
+              <ExternalLink size={18} />
+            </a>
+          )}
         </div>
       </div>
-      
+
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-4">
-          <p className="text-sm md:text-base text-foreground/80 leading-relaxed">
-            Designed and developed a desktop application that analyzes emails for phishing indicators using a fine-tuned large language model, providing users with clear safe-or-suspicious verdicts.
-          </p>
+          <p className="text-sm md:text-base text-foreground/80 leading-relaxed">{description}</p>
           <ul className="space-y-2 text-sm text-foreground/70">
-            <li className="flex gap-2">
-              <span className="text-primary mt-1">↳</span>
-              <span>Built an AI-driven VTuber character interface (Unika) that guides users through analysis.</span>
-            </li>
-            <li className="flex gap-2">
-              <span className="text-primary mt-1">↳</span>
-              <span>Developed front-end using Electron and integrated real-time LLM backend.</span>
-            </li>
-            <li className="flex gap-2">
-              <span className="text-primary mt-1">↳</span>
-              <span>Architected backend on AWS with PostgreSQL for scalable email ingestion.</span>
-            </li>
+            {bullets.map((b, i) => (
+              <li key={i} className="flex gap-2">
+                <span className="text-primary mt-1">↳</span>
+                <span>{b}</span>
+              </li>
+            ))}
           </ul>
         </div>
-        
+
         <div className="space-y-4">
           <div className="font-heading text-sm text-primary mb-2">Technological Stack</div>
           <div className="flex flex-wrap gap-2">
-            {['Electron', 'LLM', 'AWS', 'PostgreSQL', 'Python'].map(tag => (
+            {tags.map(tag => (
               <span key={tag} className="px-2 py-1 text-[10px] font-mono border border-primary/20 text-primary/80 uppercase">
                 {tag}
               </span>
@@ -238,7 +256,58 @@ export default function App() {
 
       {/* Projects Section */}
       <Section id="projects" title="> ./projects/featured">
-        <ProjectCard />
+        <div className="space-y-8">
+          <ProjectCard
+            title="Unika — AI-Powered Phishing Detection"
+            subtitle="2026 | Manhattan University Senior Capstone"
+            description="Designed and developed a desktop application that analyzes emails for phishing indicators using a fine-tuned large language model, providing users with clear safe-or-suspicious verdicts."
+            bullets={[
+              'Built an AI-driven VTuber character interface (Unika) that guides users through analysis.',
+              'Developed front-end using Electron and integrated real-time LLM backend.',
+              'Architected backend on AWS with PostgreSQL for scalable email ingestion.',
+            ]}
+            tags={['Electron', 'LLM', 'AWS', 'PostgreSQL', 'Python']}
+          />
+
+          <ProjectCard
+            title="PortHawk — Async TCP Port Scanner"
+            subtitle="2025 | Offensive Security Tool"
+            description="Fast, lightweight TCP port scanner written in pure Python. Uses asyncio to scan hundreds of ports concurrently, grabs service banners from open ports, and cross-references versions against a local CVE signature database to flag potentially exploitable services."
+            bullets={[
+              'Implemented bounded asyncio concurrency to scan the full 1–1024 range in seconds without overwhelming the host or local socket table.',
+              'Built a banner-grabbing routine with an HTTP HEAD probe for service fingerprinting and version extraction.',
+              'Designed a JSON-driven signature engine that correlates banners with CVEs and severity ratings, exporting results for downstream tooling.',
+            ]}
+            tags={['Python', 'asyncio', 'TCP', 'CVE', 'JSON']}
+            githubUrl="https://github.com/IAmExcel/porthawk"
+          />
+
+          <ProjectCard
+            title="WebProbe — HTTP Security Posture Auditor"
+            subtitle="2025 | Offensive Recon & Hardening"
+            description="HTTP security auditor that inspects response headers, cookie attributes, TLS/HTTPS enforcement, and information-disclosure surfaces, then assigns a weighted A–F grade with prioritized remediation advice. CI-friendly exit codes let it gate a deployment pipeline."
+            bullets={[
+              'Implemented weighted scoring across 13+ checks (HSTS, CSP, X-Frame-Options, cookie flags, version disclosure) producing an actionable A–F grade.',
+              'Audits HTTPS enforcement by probing the plaintext variant to verify the upgrade redirect; flags cookies missing Secure / HttpOnly / SameSite.',
+              'Exports structured JSON for SIEM and dashboard ingestion and returns non-zero exit codes on failing grades for CI/CD gating.',
+            ]}
+            tags={['Python', 'HTTP', 'TLS', 'OWASP', 'CI/CD']}
+            githubUrl="https://github.com/IAmExcel/webprobe"
+          />
+
+          <ProjectCard
+            title="LogSentry — SSH Brute-Force Detection Engine"
+            subtitle="2025 | Defensive Security / Blue Team"
+            description="Defensive log-analysis tool that parses Linux auth.log / OpenSSH events, correlates failed login attempts per source IP using a sliding time window, detects brute-force attacks, and escalates any successful login that follows an attack as a likely compromise."
+            bullets={[
+              'Engineered a two-pointer sliding-window algorithm that flags slow drips and short bursts that simple counters miss.',
+              'Auto-escalates alerts to CRITICAL when an Accepted login follows the attack window, naming the affected account for immediate review.',
+              'Exports IOCs to JSON or CSV by extension for firewall blocklists, SIEM ingestion, or cron-driven alerting pipelines.',
+            ]}
+            tags={['Python', 'Regex', 'SIEM', 'IOC', 'OpenSSH']}
+            githubUrl="https://github.com/IAmExcel/logsentry"
+          />
+        </div>
       </Section>
 
       {/* Experience Section */}
