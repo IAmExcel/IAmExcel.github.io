@@ -99,6 +99,69 @@ const ProjectCard = ({ title, subtitle, description, bullets, tags, githubUrl, l
   </div>
 );
 
+const SystemMonitor = () => {
+  const [cpu, setCpu] = useState(12.4);
+  const [uptime, setUptime] = useState(99.98);
+  const [threats, setThreats] = useState(0);
+  const [threatGlow, setThreatGlow] = useState(false);
+
+  useEffect(() => {
+    // CPU: drifts every ~900ms inside a plausible 8–34% range
+    const cpuInterval = setInterval(() => {
+      setCpu(prev => {
+        const delta = (Math.random() - 0.5) * 6;
+        return Math.max(7.8, Math.min(34.2, prev + delta));
+      });
+    }, 900);
+
+    // Uptime: creeps upward slowly, resets if it ever hits 99.99
+    const uptimeInterval = setInterval(() => {
+      setUptime(prev => {
+        const next = prev + Math.random() * 0.003;
+        return next > 99.99 ? 99.92 + Math.random() * 0.04 : next;
+      });
+    }, 4000);
+
+    // THREATS: occasional brief blip to simulate detected-and-mitigated activity
+    const threatInterval = setInterval(() => {
+      const detected = Math.floor(Math.random() * 3) + 1; // 1–3
+      setThreats(detected);
+      setThreatGlow(true);
+      const clearAt = 900 + Math.random() * 700;
+      setTimeout(() => {
+        setThreats(0);
+        setThreatGlow(false);
+      }, clearAt);
+    }, 14000 + Math.random() * 10000);
+
+    return () => {
+      clearInterval(cpuInterval);
+      clearInterval(uptimeInterval);
+      clearInterval(threatInterval);
+    };
+  }, []);
+
+  return (
+    <div className="p-4 border border-primary/10 bg-black/40 space-y-2 w-48">
+      <p className="text-primary/60 border-b border-primary/10 pb-1 mb-2 uppercase">System Monitor</p>
+      <div className="flex justify-between">
+        <span>CPU:</span>
+        <span className="text-primary/80 tabular-nums">{cpu.toFixed(1)}%</span>
+      </div>
+      <div className="flex justify-between">
+        <span>THREATS:</span>
+        <span className={`text-destructive tabular-nums ${threatGlow ? 'terminal-glow' : ''}`}>
+          {threats} ACTIVE
+        </span>
+      </div>
+      <div className="flex justify-between">
+        <span>UPTIME:</span>
+        <span className="tabular-nums">{uptime.toFixed(2)}%</span>
+      </div>
+    </div>
+  );
+};
+
 const CertCard = ({ name, expires }: { name: string; expires?: string }) => (
   <div className="p-4 border border-primary/30 bg-primary/5 rounded-sm flex items-start gap-4 hover:border-primary transition-colors group">
     <div className="p-2 bg-primary/10 rounded-sm text-primary group-hover:scale-110 transition-transform">
@@ -130,6 +193,15 @@ export default function App() {
 
       {/* Hero Section */}
       <section className="h-screen relative flex items-center justify-center overflow-hidden pt-16">
+        {/* Ambient green glow that lights the whole hero (matches original Blink preview vibe) */}
+        <div
+          className="absolute inset-0 z-0 pointer-events-none"
+          style={{
+            background:
+              'radial-gradient(ellipse 75% 65% at 50% 50%, hsl(153 100% 50% / 0.16) 0%, hsl(153 100% 50% / 0.06) 35%, transparent 70%)',
+          }}
+        />
+
         {/* R3F Globe Background */}
         <div className="absolute inset-0 z-0">
           <Suspense fallback={null}>
@@ -182,21 +254,7 @@ export default function App() {
               <p>LONG: 73.8648° W</p>
               <p>LOC: THE BRONX, NY</p>
             </div>
-            <div className="p-4 border border-primary/10 bg-black/40 space-y-2 w-48">
-              <p className="text-primary/60 border-b border-primary/10 pb-1 mb-2 uppercase">System Monitor</p>
-              <div className="flex justify-between">
-                <span>CPU:</span>
-                <span className="text-primary/80">12.4%</span>
-              </div>
-              <div className="flex justify-between">
-                <span>THREATS:</span>
-                <span className="text-destructive">0 ACTIVE</span>
-              </div>
-              <div className="flex justify-between">
-                <span>UPTIME:</span>
-                <span>99.98%</span>
-              </div>
-            </div>
+            <SystemMonitor />
           </div>
         </div>
 
