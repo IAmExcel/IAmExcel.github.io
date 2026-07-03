@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Inter:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Share+Tech+Mono&family=Inter:wght@100..900&display=swap');
 @import '@blinkdotnew/ui/styles';
 
 @tailwind base;
@@ -25,32 +25,43 @@
     min-height: 100%;
     @apply bg-background text-foreground font-sans overflow-x-hidden selection:bg-primary/30 selection:text-primary;
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading uppercase tracking-wider;
   }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+  }
 }
 
-:root {
-  --background: 220 33% 6%;
-  --foreground: 153 100% 50%;
+/* html.theme-linear.dark out-specifies :root so our palette always beats
+   the @blinkdotnew/ui theme variables regardless of dark-mode class. */
+:root,
+html.theme-linear,
+html.theme-linear.dark {
+  /* Near-black with a green cast; body text is pale mint for contrast,
+     saturated green is reserved for accents/UI chrome. */
+  --background: 160 30% 4%;
+  --foreground: 150 25% 86%;
   --primary: 153 100% 50%;
-  --primary-foreground: 220 33% 6%;
+  --primary-foreground: 160 30% 4%;
   --secondary: 188 100% 50%;
-  --secondary-foreground: 220 33% 6%;
+  --secondary-foreground: 160 30% 4%;
   --accent: 188 100% 50%;
-  --accent-foreground: 220 33% 6%;
+  --accent-foreground: 160 30% 4%;
   --destructive: 347 100% 61%;
   --destructive-foreground: 0 0% 100%;
-  --muted: 220 33% 12%;
-  --muted-foreground: 153 50% 70%;
-  --border: 153 100% 20%;
-  --input: 220 33% 12%;
+  --muted: 160 25% 10%;
+  --muted-foreground: 150 15% 62%;
+  --border: 153 60% 18%;
+  --input: 160 25% 10%;
   --ring: 153 100% 50%;
-  --radius-md: 0.25rem;
-  
+  --radius-md: 0.125rem;
+
   --font-sans: 'Inter', system-ui, sans-serif;
-  --font-heading: 'JetBrains Mono', monospace;
+  --font-heading: 'Share Tech Mono', monospace;
   --font-mono: 'JetBrains Mono', monospace;
 }
 
@@ -58,9 +69,21 @@
   .terminal-glow {
     text-shadow: 0 0 10px hsl(var(--primary) / 0.5), 0 0 20px hsl(var(--primary) / 0.3);
   }
-  
+
   .terminal-glow-cyan {
     text-shadow: 0 0 10px hsl(var(--accent) / 0.5), 0 0 20px hsl(var(--accent) / 0.3);
+  }
+
+  .terminal-glow-red {
+    text-shadow: 0 0 10px hsl(var(--destructive) / 0.6), 0 0 20px hsl(var(--destructive) / 0.35);
+  }
+
+  .box-glow {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.12), inset 0 0 20px hsl(var(--primary) / 0.04);
+  }
+
+  .box-glow-strong {
+    box-shadow: 0 0 30px hsl(var(--primary) / 0.25), inset 0 0 25px hsl(var(--primary) / 0.06);
   }
 
   .scanlines {
@@ -88,17 +111,57 @@
     background-size: 100% 2px, 3px 100%;
     pointer-events: none;
   }
+
+  /* Faint blueprint grid used behind full sections */
+  .bg-grid {
+    background-image:
+      linear-gradient(hsl(var(--primary) / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--primary) / 0.05) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  /* Terminal window chrome (title bar host) */
+  .term-window {
+    border: 1px solid hsl(var(--border));
+    background: hsl(160 30% 5% / 0.85);
+    backdrop-filter: blur(4px);
+  }
+
+  .term-titlebar {
+    border-bottom: 1px solid hsl(var(--border));
+    background: hsl(var(--primary) / 0.06);
+  }
+
+  /* Diagonal light sweep across a card on hover */
+  .scan-sweep {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scan-sweep::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 40%, hsl(var(--primary) / 0.10) 50%, transparent 60%);
+    transform: translateX(-100%);
+    pointer-events: none;
+  }
+
+  .scan-sweep:hover::after {
+    animation: sweep 0.9s ease-out forwards;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .scanlines, .crt-overlay {
     display: none;
   }
-  
-  .glitch-hover:hover {
+
+  .glitch-hover:hover,
+  .scan-sweep:hover::after {
     animation: none;
   }
-  
+
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
@@ -110,6 +173,10 @@
 @keyframes scanline {
   0% { transform: translateY(0); }
   100% { transform: translateY(100vh); }
+}
+
+@keyframes sweep {
+  to { transform: translateX(100%); }
 }
 
 @keyframes glitch {
@@ -128,4 +195,44 @@
 
 .glitch-hover:hover {
   animation: glitch 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* Chromatic-aberration glitch for the hero title. The two layers are
+   positioned by the component; keyframes just jitter the clip windows. */
+@keyframes glitch-layer-1 {
+  0%, 91%, 100% { clip-path: inset(0 0 100% 0); transform: none; }
+  92% { clip-path: inset(20% 0 55% 0); transform: translate(-3px, 1px); }
+  94% { clip-path: inset(60% 0 15% 0); transform: translate(3px, -1px); }
+  96% { clip-path: inset(5% 0 80% 0); transform: translate(-2px, 0); }
+  98% { clip-path: inset(45% 0 40% 0); transform: translate(2px, 1px); }
+}
+
+@keyframes glitch-layer-2 {
+  0%, 91%, 100% { clip-path: inset(100% 0 0 0); transform: none; }
+  93% { clip-path: inset(70% 0 10% 0); transform: translate(3px, -1px); }
+  95% { clip-path: inset(10% 0 75% 0); transform: translate(-3px, 1px); }
+  97% { clip-path: inset(55% 0 25% 0); transform: translate(2px, -1px); }
+}
+
+.glitch-layers { position: relative; display: inline-block; }
+
+.glitch-layers > .glitch-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.glitch-layers > .glitch-layer:first-of-type {
+  color: hsl(var(--destructive));
+  animation: glitch-layer-1 6s steps(1) infinite;
+}
+
+.glitch-layers > .glitch-layer:last-of-type {
+  color: hsl(var(--accent));
+  animation: glitch-layer-2 6s steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glitch-layers > .glitch-layer { display: none; }
 }

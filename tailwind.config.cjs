@@ -32,7 +32,7 @@ module.exports = {
       // ── Font families — resolve to per-theme CSS vars ─────────────────────
       fontFamily: {
         sans:    ['Inter', 'sans-serif'],
-        heading: ['JetBrains Mono', 'monospace'],
+        heading: ['Share Tech Mono', 'JetBrains Mono', 'monospace'],
         mono:    ['JetBrains Mono', 'monospace'],
         serif:   ['Georgia', 'serif'],
       },

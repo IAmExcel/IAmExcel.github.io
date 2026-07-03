@@ -12,7 +12,7 @@ dist
 dist-ssr
 *.local
 
-# Local Claude Code settings
+# Local editor/tooling settings
 .claude/
 
 # Editor directories and files

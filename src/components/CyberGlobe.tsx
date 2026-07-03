@@ -35,21 +35,21 @@ export const CyberGlobe = () => {
     <group>
       {/* Inner Sphere */}
       <Sphere ref={mesh1} args={[1, 32, 32]}>
-        <meshBasicMaterial 
-          color="#00ff88" 
-          wireframe 
-          transparent 
-          opacity={0.8} 
+        <meshBasicMaterial
+          color="#00ff88"
+          wireframe
+          transparent
+          opacity={0.35}
         />
       </Sphere>
       
       {/* Outer Sphere */}
       <Sphere ref={mesh2} args={[1, 16, 16]}>
-        <meshBasicMaterial 
-          color="#00ff88" 
-          wireframe 
-          transparent 
-          opacity={0.3} 
+        <meshBasicMaterial
+          color="#00ff88"
+          wireframe
+          transparent
+          opacity={0.12}
         />
       </Sphere>
       
